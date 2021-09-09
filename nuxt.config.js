@@ -3,8 +3,8 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - vidserve',
-    title: 'vidserve',
+    titleTemplate: 'Video Browser',
+    title: 'Video Browser',
     htmlAttrs: {
       lang: 'en',
     },
@@ -16,16 +16,16 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-
+  ssr: true,
   server: {
-    host: '0', // default: localhost
+    host: '0.0.0.0', // default: localhost
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: '~/plugins/vue-plyr', mode: 'client' }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
