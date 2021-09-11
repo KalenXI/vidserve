@@ -11,7 +11,7 @@
           <h1>{{ video.title }}</h1>
           <div>Recorded On: {{ video.recorded_date | formatDate }}</div>
           <div>Uploaded On: {{ video.uploaded_date | formatDate }}</div>
-          <div>Duration: {{ video.duration }}</div>
+          <div>Duration: {{ video.duration | formatTime }}</div>
           <div>
             Categories:
             <v-chip
@@ -66,7 +66,7 @@
               </v-list-item-group>
             </v-list>
           </v-menu>
-          <v-btn width="100%">Edit</v-btn>
+          <EditVideo :initial-video="video"></EditVideo>
         </div>
       </v-col>
     </v-row>
@@ -80,10 +80,13 @@
 // import 'vue-plyr/dist/vue-plyr.css'
 import Hls from 'hls.js'
 import Plyr from 'plyr'
+import EditVideo from '~/components/EditVideo'
 
 export default {
   name: 'TestVideo',
-  components: {},
+  components: {
+    EditVideo,
+  },
   async asyncData({ params, $axios }) {
     const id = params.id
     const video = await $axios.$get('/video/' + id)
@@ -92,6 +95,7 @@ export default {
   data() {
     return {
       dialog: false,
+      select: [],
       baseURL: 'http://10.0.0.238:8000',
       selectedItem: {},
       video: {
@@ -114,6 +118,11 @@ export default {
         password: null,
       },
     }
+  },
+  created() {
+    this.$nuxt.$on('video-data-updated', async function () {
+      await this.$nuxt.refresh()
+    })
   },
   mounted() {
     const defaultOptions = {}
@@ -169,6 +178,9 @@ export default {
         })
       }
     }
+  },
+  beforeDestroy() {
+    this.$nuxt.$off('video-data-updated')
   },
   methods: {
     download(id, baseURL, url) {
