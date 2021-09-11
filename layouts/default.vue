@@ -5,16 +5,14 @@
       :mini-variant="miniVariant"
       :clipped="clipped"
       fixed
-      app
-    >
+      app>
       <v-list>
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
           :to="item.to"
           router
-          exact
-        >
+          exact>
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -55,13 +53,13 @@ export default {
         },
         {
           icon: 'mdi-filmstrip-box-multiple',
-          title: 'Galleries',
-          to: '/galleries',
+          title: 'Categories',
+          to: '/categories',
         },
         {
           icon: 'mdi-filmstrip-box-multiple',
           title: 'Test Video',
-          to: '/watch/123',
+          to: '/watch/CnhqnsxAnXBt9ARvkKU8WX',
         },
       ],
       miniVariant: false,

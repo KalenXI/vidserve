@@ -3,27 +3,70 @@
     <video>
       <source
         type="application/x-mpegURL"
-        src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-      />
+        :src="baseURL + '/files/videos/' + video._id + '/' + video.url" />
     </video>
     <v-row class="my-5 mx-xl-12">
       <v-col style="flex-grow: 5">
         <v-card class="pa-4">
-          <h1>Title Goes Here</h1>
-          <div>Recorded On: 7/24/2019</div>
-          <div>Length: 5:50</div>
+          <h1>{{ video.title }}</h1>
+          <div>Recorded On: {{ video.recorded_date | formatDate }}</div>
+          <div>Uploaded On: {{ video.uploaded_date | formatDate }}</div>
+          <div>Duration: {{ video.duration }}</div>
+          <div>
+            Categories:
+            <v-chip
+              v-for="category in video.categories"
+              :key="category"
+              small
+              link
+              nuxt
+              :to="'/category/' + category"
+              class="mx-1"
+              >{{ category }}
+            </v-chip>
+          </div>
         </v-card>
         <div style="margin-top: 1em">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Architecto
-          aut, eos esse facere ipsam magnam numquam quisquam repellat ullam
-          voluptate! Ab accusantium alias ex mollitia nulla porro provident quos
-          vitae.
+          {{ video.description }}
         </div>
       </v-col>
       <v-col class="d-flex justify-end">
         <div class="d-flex flex-column" style="width: 100%">
-          <v-btn width="100%" class="mb-4">Download</v-btn>
-          <v-btn width="100%">Share</v-btn>
+          <v-menu
+            top
+            offset-y
+            rounded="lg"
+            origin="center center"
+            transition="slide-y-transition">
+            <template #activator="{ on, attrs }">
+              <v-btn width="100%" class="mb-4" v-bind="attrs" v-on="on">
+                Download
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item-group v-model="selectedItem">
+                <v-list-item
+                  v-for="(file, index) in video.files"
+                  :key="index"
+                  two-line
+                  @click="download(video._id, baseURL, file.url)">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ file.name }}</v-list-item-title>
+                    <v-list-item-subtitle>
+                      <b>{{ file.size }}</b> | {{ file.resolution }} |
+                      {{ file.type }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-icon large style="vertical-align: bottom"
+                      >mdi-file-download-outline</v-icon
+                    >
+                  </v-list-item-action>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-menu>
+          <v-btn width="100%">Edit</v-btn>
         </div>
       </v-col>
     </v-row>
@@ -41,21 +84,46 @@ import Plyr from 'plyr'
 export default {
   name: 'TestVideo',
   components: {},
-  asyncData({ params }) {
+  async asyncData({ params, $axios }) {
     const id = params.id
-    return { id }
+    const video = await $axios.$get('/video/' + id)
+    return { video }
   },
-  data() {},
+  data() {
+    return {
+      dialog: false,
+      baseURL: 'http://10.0.0.238:8000',
+      selectedItem: {},
+      video: {
+        title: '',
+        description: '',
+        url: '',
+        uploaded_date: '',
+        recorded_date: '',
+        files: [
+          {
+            name: '',
+            size: '',
+            resolution: '',
+            type: '',
+            url: '',
+          },
+        ],
+        categories: [],
+        unlisted: true,
+        password: null,
+      },
+    }
+  },
   mounted() {
     const defaultOptions = {}
     if (Hls.isSupported()) {
       const hls = new Hls()
       const video = document.querySelector('video')
       const source = video.getElementsByTagName('source')[0].src
-      video.src = 'test'
       hls.loadSource(source)
 
-      hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
         const availableQualities = hls.levels.map((l) => l.height)
         availableQualities.unshift(0)
 
@@ -89,6 +157,7 @@ export default {
       hls.attachMedia(video)
       window.hls = hls
     }
+
     function updateQuality(newQuality) {
       if (newQuality === 0) {
         window.hls.currentLevel = -1
@@ -100,6 +169,11 @@ export default {
         })
       }
     }
+  },
+  methods: {
+    download(id, baseURL, url) {
+      window.location.href = baseURL + '/files/videos/' + id + '/' + url
+    },
   },
 }
 </script>
