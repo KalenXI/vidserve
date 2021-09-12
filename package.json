@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.15.5",
+    "@nuxtjs/auth-next": "5.0.0-1624817847.21691f1",
     "@nuxtjs/axios": "^5.13.6",
     "consola": "^2.15.3",
     "core-js": "^3.15.1",

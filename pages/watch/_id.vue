@@ -1,9 +1,10 @@
 <template>
   <v-container style="max-width: 90em">
-    <video>
+    <video width="100%" height="100%" playsinline controls>
       <source
         type="application/x-mpegURL"
         :src="baseURL + '/files/videos/' + video._id + '/' + video.url" />
+      Your browser doesn't support HTML5 video.
     </video>
     <v-row class="my-5 mx-xl-12">
       <v-col style="flex-grow: 5">
@@ -30,8 +31,8 @@
           {{ video.description }}
         </div>
       </v-col>
-      <v-col class="d-flex justify-end">
-        <div class="d-flex flex-column" style="width: 100%">
+      <v-col class="d-flex justify-end" style="min-width: 100px">
+        <div class="d-flex flex-column flex-wrap" style="width: 100%">
           <v-menu
             top
             offset-y

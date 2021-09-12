@@ -54,7 +54,7 @@ export default {
         {
           icon: 'mdi-filmstrip-box-multiple',
           title: 'Categories',
-          to: '/categories',
+          to: '/category',
         },
         {
           icon: 'mdi-filmstrip-box-multiple',
