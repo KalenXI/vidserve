@@ -26,7 +26,7 @@
                 v-model="video.categories"
                 chips
                 multiple
-                :items="video.categories"
+                :items="categories"
                 label="Categories"></v-combobox>
             </v-col>
             <v-col cols="6">
@@ -126,6 +126,8 @@ export default {
       dialog: false,
       dateMenu: false,
       timeMenu: false,
+      isLoading: false,
+      categories: [],
       video: { ...this.initialVideo },
       recDateTime: DateTime.fromISO(this.initialVideo.recorded_date + 'Z'),
     }
@@ -160,6 +162,12 @@ export default {
   },
   mounted() {
     this.recDateTime = DateTime.fromISO(this.video.recorded_date + 'Z')
+
+    fetch('http://10.0.0.238:8000/category/')
+      .then((res) => res.clone().json())
+      .then((res) => {
+        this.categories = res
+      })
   },
   methods: {
     async saveVideo() {
@@ -170,6 +178,7 @@ export default {
     },
     cancelSave() {
       this.video = { ...this.initialVideo }
+      this.recDateTime = DateTime.fromISO(this.initialVideo.recorded_date + 'Z')
       this.dialog = false
     },
   },
