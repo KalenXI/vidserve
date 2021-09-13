@@ -88,6 +88,7 @@ export default {
   components: {
     EditVideo,
   },
+  middleware: 'auth',
   async asyncData({ params, $axios }) {
     const id = params.id
     const video = await $axios.$get('/video/' + id)
