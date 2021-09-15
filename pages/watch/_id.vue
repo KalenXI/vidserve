@@ -98,7 +98,7 @@ export default {
     return {
       dialog: false,
       select: [],
-      baseURL: 'http://10.0.0.238:8000',
+      baseURL: 'http:/localhost:8000',
       selectedItem: {},
       video: {
         title: '',
@@ -127,6 +127,7 @@ export default {
     })
   },
   mounted() {
+    console.log(this.$auth.user)
     const defaultOptions = {}
     if (Hls.isSupported()) {
       const hls = new Hls()
