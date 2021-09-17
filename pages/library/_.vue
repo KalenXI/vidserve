@@ -36,9 +36,65 @@
     </v-dialog>
 
     <div v-if="libraryLoaded">
-      <v-card v-for="sub in library.children" :key="sub" class="mx-auto my-5">
-        {{ sub }}
+      <div v-if="res.library.children">
+        <h1 class="mb-4">Sub-folders:</h1>
+        <v-row>
+          <v-col v-for="sub in res.library.children" :key="sub">
+            <v-btn x-large block max-width="344" class="rounded-lg">
+              <v-icon left>mdi-folder</v-icon>
+              {{ sub }}
+            </v-btn>
+          </v-col>
+        </v-row>
+      </div>
+
+      <h1 class="mt-4">{{ res.library.name }}</h1>
+      <v-pagination
+        v-if="totalPages > 1"
+        v-model="page"
+        :length="totalPages"
+        @input="handlePageChange"></v-pagination>
+      <v-card
+        v-for="vid in res.videos"
+        :key="vid._id"
+        :to="'/video/' + vid._id"
+        class="mx-auto my-5">
+        <v-row no-gutters>
+          <v-col class="d-flex justify-start">
+            <v-img
+              class="ma-3"
+              height="200"
+              width="355"
+              contain
+              lazy-src="/placeholder-image.png"
+              style="background-image: url('/placeholder-image.png')"
+              :src="
+                baseURL + '/files/videos/' + vid._id + '/thumb.jpg'
+              "></v-img>
+          </v-col>
+          <v-col style="flex-grow: 5">
+            <v-card-title>{{ vid.title }}</v-card-title>
+            <v-card-text>
+              <v-row dense class="mx-0 mb-1">
+                Duration: {{ vid.duration | formatTime }}
+              </v-row>
+              <v-row dense class="mx-0 mb-1">
+                Record Date: {{ vid.recorded_date | formatDate }}
+              </v-row>
+              <v-row
+                class="ml-0 mr-5 mt-n4"
+                style="white-space: pre-line; text-align: justify">
+                {{ vid.description }}
+              </v-row>
+            </v-card-text>
+          </v-col>
+        </v-row>
       </v-card>
+      <v-pagination
+        v-if="totalPages > 1"
+        v-model="page"
+        :length="totalPages"
+        @input="handlePageChange"></v-pagination>
     </div>
   </v-container>
 </template>
@@ -48,22 +104,48 @@ export default {
   name: 'Libraries',
   async asyncData({ $axios, params }) {
     let unauthorized = false
-    const library = await $axios
+    let libraryLoaded = false
+    let videos = []
+    const res = await $axios
       .$get('/library/' + params.pathMatch)
       .catch(({ response }) => {
         if (response.status === 401) {
           unauthorized = true
         }
       })
-    return { library, unauthorized }
+    if (res) {
+      libraryLoaded = true
+
+      videos = await $axios.$get('/library/' + params.pathMatch)
+    }
+    return { res, unauthorized, libraryLoaded, videos }
   },
   data() {
     return {
-      library: {
-        _id: '',
-        name: '',
-        children: [],
+      res: {
+        library: {
+          _id: '',
+          name: '',
+          children: [],
+        },
+        total: 0,
+        video: {
+          title: '',
+          description: '',
+          url: '',
+          img: '',
+          uploaded_date: '',
+          recorded_date: '',
+          files: {},
+          categories: [],
+          unlisted: true,
+          password: null,
+        },
       },
+      page: 1,
+      total: 0,
+      limit: 10,
+      baseURL: 'http://10.0.0.238:8000',
       unauthorized: false,
       libraryLoaded: false,
       password: '',
@@ -72,7 +154,11 @@ export default {
       wrongPassword: false,
     }
   },
-  computed: {},
+  computed: {
+    totalPages() {
+      return Math.ceil(Math.ceil(this.res.total / this.limit))
+    },
+  },
   mounted() {
     if (this.unauthorized) {
       this.dialog = true
@@ -96,8 +182,20 @@ export default {
         this.wrongPassword = false
         this.dialog = false
         this.libraryLoaded = true
-        this.library = response
+        this.res = response
       }
+    },
+    async handlePageChange() {
+      const skip = (this.page - 1) * this.limit
+      this.res = await this.$axios.$get(
+        this.$route.path +
+          '?passwd=' +
+          this.password +
+          '?skip=' +
+          skip +
+          '&limit=' +
+          this.limit
+      )
     },
   },
 }

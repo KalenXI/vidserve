@@ -88,7 +88,6 @@ export default {
   components: {
     EditVideo,
   },
-  middleware: 'auth',
   async asyncData({ params, $axios }) {
     const id = params.id
     const video = await $axios.$get('/video/' + id)
@@ -98,7 +97,7 @@ export default {
     return {
       dialog: false,
       select: [],
-      baseURL: 'http:/localhost:8000',
+      baseURL: 'http://localhost:8000',
       selectedItem: {},
       video: {
         title: '',
@@ -127,7 +126,6 @@ export default {
     })
   },
   mounted() {
-    console.log(this.$auth.user)
     const defaultOptions = {}
     if (Hls.isSupported()) {
       const hls = new Hls()

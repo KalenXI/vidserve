@@ -8,7 +8,7 @@
     <v-card
       v-for="vid in res.videos"
       :key="vid._id"
-      :to="'/watch/' + vid._id"
+      :to="'/video/' + vid._id"
       class="mx-auto my-5">
       <v-row no-gutters>
         <v-col class="d-flex justify-start">
