@@ -34,6 +34,7 @@
       <v-col class="d-flex justify-end" style="min-width: 100px">
         <div class="d-flex flex-column flex-wrap" style="width: 100%">
           <v-menu
+            v-if="video.files.length > 0"
             top
             offset-y
             rounded="lg"
@@ -67,7 +68,9 @@
               </v-list-item-group>
             </v-list>
           </v-menu>
-          <EditVideo :initial-video="video"></EditVideo>
+          <EditVideo
+            v-if="permissions.includes('write:all')"
+            :initial-video="video"></EditVideo>
         </div>
       </v-col>
     </v-row>
@@ -75,118 +78,124 @@
 </template>
 
 <script>
-// import VideoPlayer from '@/components/VideoPlayer.vue'
-// import 'video.js/dist/video-js.css'
-// import VuePlyr from 'vue-plyr/dist/vue-plyr.ssr.js'
-// import 'vue-plyr/dist/vue-plyr.css'
-import Hls from 'hls.js'
-import Plyr from 'plyr'
-import EditVideo from '~/components/EditVideo'
+  // import VideoPlayer from '@/components/VideoPlayer.vue'
+  // import 'video.js/dist/video-js.css'
+  // import VuePlyr from 'vue-plyr/dist/vue-plyr.ssr.js'
+  // import 'vue-plyr/dist/vue-plyr.css'
+  import Hls from 'hls.js'
+  import Plyr from 'plyr'
+  import EditVideo from '~/components/EditVideo'
 
-export default {
-  name: 'TestVideo',
-  components: {
-    EditVideo,
-  },
-  async asyncData({ params, $axios }) {
-    const id = params.id
-    const video = await $axios.$get('/video/' + id)
-    return { video }
-  },
-  data() {
-    return {
-      dialog: false,
-      select: [],
-      baseURL: 'http://localhost:8000',
-      selectedItem: {},
-      video: {
-        title: '',
-        description: '',
-        url: '',
-        uploaded_date: '',
-        recorded_date: '',
-        files: [
-          {
-            name: '',
-            size: '',
-            resolution: '',
-            type: '',
-            url: '',
-          },
-        ],
-        categories: [],
-        unlisted: true,
-        password: null,
-      },
-    }
-  },
-  created() {
-    this.$nuxt.$on('video-data-updated', async function () {
-      await this.$nuxt.refresh()
-    })
-  },
-  mounted() {
-    const defaultOptions = {}
-    if (Hls.isSupported()) {
-      const hls = new Hls()
-      const video = document.querySelector('video')
-      const source = video.getElementsByTagName('source')[0].src
-      hls.loadSource(source)
-
-      hls.on(Hls.Events.MANIFEST_PARSED, function () {
-        const availableQualities = hls.levels.map((l) => l.height)
-        availableQualities.unshift(0)
-
-        defaultOptions.quality = {
-          default: 0,
-          options: availableQualities,
-          forced: true,
-          onChange: (e) => updateQuality(e),
-        }
-
-        defaultOptions.i18n = {
-          qualityLabel: {
-            0: 'Auto',
-          },
-        }
-
-        hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
-          const span = document.querySelector(
-            ".plyr__menu__container [data-plyr='quality'][value='0'] span"
-          )
-          if (hls.autoLevelEnabled) {
-            span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
-          } else {
-            span.innerHTML = `AUTO`
-          }
-        })
-
-        const player = new Plyr(video, defaultOptions)
-        player.autoplay = false
-      })
-      hls.attachMedia(video)
-      window.hls = hls
-    }
-
-    function updateQuality(newQuality) {
-      if (newQuality === 0) {
-        window.hls.currentLevel = -1
-      } else {
-        window.hls.levels.forEach((level, levelIndex) => {
-          if (level.height === newQuality) {
-            window.hls.currentLevel = levelIndex
-          }
-        })
-      }
-    }
-  },
-  beforeDestroy() {
-    this.$nuxt.$off('video-data-updated')
-  },
-  methods: {
-    download(id, baseURL, url) {
-      window.location.href = baseURL + '/files/videos/' + id + '/' + url
+  export default {
+    name: 'TestVideo',
+    components: {
+      EditVideo,
     },
-  },
-}
+    async asyncData({ params, $axios, $auth }) {
+      const id = params.id
+      let permissions = []
+      $axios.setToken($auth.strategy.token.get(), 'Bearer')
+      const video = await $axios.$get('/video/' + id)
+      if ($auth.loggedIn) {
+        permissions = await $axios.$get('/user/roles')
+      }
+      return { video, permissions }
+    },
+    data() {
+      return {
+        dialog: false,
+        select: [],
+        baseURL: 'http://localhost:8000',
+        selectedItem: {},
+        permissions: [],
+        video: {
+          title: '',
+          description: '',
+          url: '',
+          uploaded_date: '',
+          recorded_date: '',
+          files: [
+            {
+              name: '',
+              size: '',
+              resolution: '',
+              type: '',
+              url: '',
+            },
+          ],
+          categories: [],
+          unlisted: true,
+          password: null,
+        },
+      }
+    },
+    created() {
+      this.$nuxt.$on('video-data-updated', async function () {
+        await this.$nuxt.refresh()
+      })
+    },
+    mounted() {
+      const defaultOptions = {}
+      if (Hls.isSupported()) {
+        const hls = new Hls()
+        const video = document.querySelector('video')
+        const source = video.getElementsByTagName('source')[0].src
+        hls.loadSource(source)
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          const availableQualities = hls.levels.map((l) => l.height)
+          availableQualities.unshift(0)
+
+          defaultOptions.quality = {
+            default: 0,
+            options: availableQualities,
+            forced: true,
+            onChange: (e) => updateQuality(e),
+          }
+
+          defaultOptions.i18n = {
+            qualityLabel: {
+              0: 'Auto',
+            },
+          }
+
+          hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+            const span = document.querySelector(
+              ".plyr__menu__container [data-plyr='quality'][value='0'] span"
+            )
+            if (hls.autoLevelEnabled) {
+              span.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
+            } else {
+              span.innerHTML = `AUTO`
+            }
+          })
+
+          const player = new Plyr(video, defaultOptions)
+          player.autoplay = false
+        })
+        hls.attachMedia(video)
+        window.hls = hls
+      }
+
+      function updateQuality(newQuality) {
+        if (newQuality === 0) {
+          window.hls.currentLevel = -1
+        } else {
+          window.hls.levels.forEach((level, levelIndex) => {
+            if (level.height === newQuality) {
+              window.hls.currentLevel = levelIndex
+            }
+          })
+        }
+      }
+    },
+    beforeDestroy() {
+      this.$nuxt.$off('video-data-updated')
+    },
+    methods: {
+      download(id, baseURL, url) {
+        window.location.href = baseURL + '/files/videos/' + id + '/' + url
+      },
+    },
+  }
 </script>

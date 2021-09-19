@@ -1,5 +1,6 @@
 {
   "semi": false,
   "singleQuote": true,
-  "bracketSameLine": true
+  "bracketSameLine": true,
+  "vueIndentScriptAndStyle": true
 }

@@ -36,13 +36,19 @@
     </v-dialog>
 
     <div v-if="libraryLoaded">
-      <div v-if="res.library.children">
-        <h1 class="mb-4">Sub-folders:</h1>
+      <div v-if="children.length > 0">
+        <h2 class="mb-4">Folders:</h2>
         <v-row>
-          <v-col v-for="sub in res.library.children" :key="sub">
-            <v-btn x-large block max-width="344" class="rounded-lg">
+          <v-col v-for="sub in children" :key="sub._id">
+            <v-btn
+              nuxt
+              x-large
+              block
+              max-width="344"
+              class="rounded-lg"
+              :to="'/library/' + sub._id">
               <v-icon left>mdi-folder</v-icon>
-              {{ sub }}
+              {{ sub.name }}
             </v-btn>
           </v-col>
         </v-row>
@@ -100,105 +106,114 @@
 </template>
 
 <script>
-export default {
-  name: 'Libraries',
-  async asyncData({ $axios, params }) {
-    let unauthorized = false
-    let libraryLoaded = false
-    let videos = []
-    const res = await $axios
-      .$get('/library/' + params.pathMatch)
-      .catch(({ response }) => {
-        if (response.status === 401) {
-          unauthorized = true
-        }
-      })
-    if (res) {
-      libraryLoaded = true
-
-      videos = await $axios.$get('/library/' + params.pathMatch)
-    }
-    return { res, unauthorized, libraryLoaded, videos }
-  },
-  data() {
-    return {
-      res: {
-        library: {
-          _id: '',
-          name: '',
-          children: [],
-        },
-        total: 0,
-        video: {
-          title: '',
-          description: '',
-          url: '',
-          img: '',
-          uploaded_date: '',
-          recorded_date: '',
-          files: {},
-          categories: [],
-          unlisted: true,
-          password: null,
-        },
-      },
-      page: 1,
-      total: 0,
-      limit: 10,
-      baseURL: 'http://10.0.0.238:8000',
-      unauthorized: false,
-      libraryLoaded: false,
-      password: '',
-      dialog: false,
-      show1: false,
-      wrongPassword: false,
-    }
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(Math.ceil(this.res.total / this.limit))
-    },
-  },
-  mounted() {
-    if (this.unauthorized) {
-      this.dialog = true
-    }
-  },
-  methods: {
-    async submitPassword() {
-      this.wrongPassword = false
-      this.unauthorized = false
-      const response = await this.$axios
-        .$get(this.$route.path + '?passwd=' + this.password)
+  export default {
+    name: 'Libraries',
+    async asyncData({ $axios, params }) {
+      let unauthorized = false
+      let libraryLoaded = false
+      let videos = []
+      let children = []
+      const res = await $axios
+        .$get('/library/' + params.pathMatch)
         .catch(({ response }) => {
-          if (response.status !== '401') {
-            this.unauthorized = true
-            this.wrongPassword = true
-            this.password = ''
+          if (response.status === 401) {
+            unauthorized = true
           }
         })
-      if (response) {
-        this.unauthorized = false
-        this.wrongPassword = false
-        this.dialog = false
-        this.libraryLoaded = true
-        this.res = response
+      if (res) {
+        libraryLoaded = true
+
+        videos = await $axios.$get('/library/' + params.pathMatch)
+        children = await $axios
+          .$get('/library/children/' + params.pathMatch)
+          .catch(({ response }) => {
+            if (response.status === 401) {
+              unauthorized = true
+            }
+          })
+      }
+      return { res, unauthorized, libraryLoaded, videos, children }
+    },
+    data() {
+      return {
+        res: {
+          library: {
+            _id: '',
+            name: '',
+            children: [],
+          },
+          total: 0,
+          video: {
+            title: '',
+            description: '',
+            url: '',
+            img: '',
+            uploaded_date: '',
+            recorded_date: '',
+            files: {},
+            categories: [],
+            unlisted: true,
+            password: null,
+          },
+        },
+        children: [],
+        page: 1,
+        total: 0,
+        limit: 10,
+        baseURL: 'http://10.0.0.238:8000',
+        unauthorized: false,
+        libraryLoaded: false,
+        password: '',
+        dialog: false,
+        show1: false,
+        wrongPassword: false,
       }
     },
-    async handlePageChange() {
-      const skip = (this.page - 1) * this.limit
-      this.res = await this.$axios.$get(
-        this.$route.path +
-          '?passwd=' +
-          this.password +
-          '?skip=' +
-          skip +
-          '&limit=' +
-          this.limit
-      )
+    computed: {
+      totalPages() {
+        return Math.ceil(Math.ceil(this.res.total / this.limit))
+      },
     },
-  },
-}
+    mounted() {
+      if (this.unauthorized) {
+        this.dialog = true
+      }
+    },
+    methods: {
+      async submitPassword() {
+        this.wrongPassword = false
+        this.unauthorized = false
+        const response = await this.$axios
+          .$get(this.$route.path + '?passwd=' + this.password)
+          .catch(({ response }) => {
+            if (response.status !== '401') {
+              this.unauthorized = true
+              this.wrongPassword = true
+              this.password = ''
+            }
+          })
+        if (response) {
+          this.unauthorized = false
+          this.wrongPassword = false
+          this.dialog = false
+          this.libraryLoaded = true
+          this.res = response
+        }
+      },
+      async handlePageChange() {
+        const skip = (this.page - 1) * this.limit
+        this.res = await this.$axios.$get(
+          this.$route.path +
+            '?passwd=' +
+            this.password +
+            '?skip=' +
+            skip +
+            '&limit=' +
+            this.limit
+        )
+      },
+    },
+  }
 </script>
 
 <style scoped></style>
