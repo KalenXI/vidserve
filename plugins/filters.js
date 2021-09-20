@@ -8,6 +8,10 @@ Vue.filter('formatDate', function (value) {
   if (value) return new Date(value).toLocaleDateString('en-us')
 })
 
+Vue.filter('formatDateTime', function (value) {
+  if (value) return new Date(value).toLocaleString('en-us')
+})
+
 Vue.filter('titleCase', function (value) {
   const splitStr = value.toLowerCase().split(' ')
   for (let i = 0; i < splitStr.length; i++) {

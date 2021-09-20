@@ -34,10 +34,12 @@
         </v-form>
       </v-card>
     </v-dialog>
+    <h1 class="my-4">
+      {{ res.library.name.substring(res.library.name.lastIndexOf('/') + 1) }}
+    </h1>
 
     <div v-if="libraryLoaded">
       <div v-if="children.length > 0">
-        <h2 class="mb-4">Folders:</h2>
         <v-row>
           <v-col v-for="sub in children" :key="sub._id">
             <v-btn
@@ -48,13 +50,12 @@
               class="rounded-lg"
               :to="'/library/' + sub._id">
               <v-icon left>mdi-folder</v-icon>
-              {{ sub.name }}
+              {{ sub.name.substring(sub.name.lastIndexOf('/') + 1) }}
             </v-btn>
           </v-col>
         </v-row>
       </div>
 
-      <h1 class="mt-4">{{ res.library.name }}</h1>
       <v-pagination
         v-if="totalPages > 1"
         v-model="page"
@@ -86,6 +87,19 @@
               </v-row>
               <v-row dense class="mx-0 mb-1">
                 Record Date: {{ vid.recorded_date | formatDate }}
+              </v-row>
+              <v-row dense class="mx-0 mb-1">
+                Categories:
+                <v-chip
+                  v-for="category in vid.categories"
+                  :key="category"
+                  small
+                  link
+                  nuxt
+                  :to="'/category/' + category"
+                  class="mx-1"
+                  >{{ category }}
+                </v-chip>
               </v-row>
               <v-row
                 class="ml-0 mr-5 mt-n4"
@@ -172,6 +186,18 @@
     computed: {
       totalPages() {
         return Math.ceil(Math.ceil(this.res.total / this.limit))
+      },
+      breadcrumbs() {
+        const items = []
+        for (const i of this.res.library.name.split('/')) {
+          const item = {
+            text: i,
+            disabled: false,
+            href: '',
+          }
+          items.push(item)
+        }
+        return items
       },
     },
     mounted() {
