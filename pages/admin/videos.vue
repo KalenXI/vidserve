@@ -6,9 +6,8 @@
         <v-data-table :headers="headers" :items="videos" :items-per-page="10">
           <template #top>
             <v-toolbar flat
-              ><v-spacer></v-spacer
-              ><v-btn color="primary">Add Item</v-btn></v-toolbar
-            >
+              ><v-spacer></v-spacer><AddVideo></AddVideo
+            ></v-toolbar>
           </template>
           <template #[`item.uploaded_date`]="{ item }">
             {{ item.uploaded_date | formatDateTime }}
@@ -44,8 +43,13 @@
 </template>
 
 <script>
+  import AddVideo from '@/components/AddVideo'
+
   export default {
     name: 'VideosList',
+    components: {
+      AddVideo,
+    },
     middleware: ['auth'],
     async asyncData({ $axios, params }) {
       const videos = await $axios.$get('/video/')
