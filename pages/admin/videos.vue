@@ -88,6 +88,11 @@
         ],
       }
     },
+    created() {
+      this.$nuxt.$on('video-data-updated', async function () {
+        await this.$nuxt.refresh()
+      })
+    },
   }
 </script>
 

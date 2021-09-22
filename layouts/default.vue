@@ -20,6 +20,37 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-group
+          v-if="permissions.includes('write:all')"
+          prepend-icon="mdi-database">
+          <template #activator>
+            <v-list-item-title>Database</v-list-item-title>
+          </template>
+          <v-list-item to="/admin/videos" class="pr-6" router exact>
+            <v-list-item-action>
+              <v-icon>mdi-animation-play</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Videos</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/admin/libraries" class="pr-6" router disabled exact>
+            <v-list-item-action>
+              <v-icon>mdi-bookshelf</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Libraries</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item to="/admin/users" class="pr-6" router disabled exact>
+            <v-list-item-action>
+              <v-icon>mdi-account-multiple</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Users</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
         <v-list-group prepend-icon="mdi-bookshelf">
           <template #activator>
             <v-list-item-title>Libraries</v-list-item-title>
@@ -119,6 +150,7 @@
       return {
         categories: [],
         libraries: [],
+        permissions: [],
         clipped: true,
         drawer: true,
         fixed: true,
@@ -149,6 +181,9 @@
         'http://localhost:8000/library/root',
         header
       ).then((res) => res.json())
+      if (this.$auth.loggedIn) {
+        this.permissions = await this.$axios.$get('/user/roles')
+      }
     },
     methods: {
       login() {
