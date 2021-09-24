@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 Vue.filter('formatTime', function (value) {
+  if (value === 0) return '00:00:00'
   if (value) return new Date(value * 1000).toISOString().substr(11, 8)
 })
 

@@ -241,12 +241,12 @@
         this.progress = 0
         this.currentFile = file
       },
-      saveVideo() {
+      async saveVideo() {
         this.video.recorded_date = this.recDateTime.setZone('UTC').toISO()
         this.video.uploaded_date = DateTime.now().toISO()
-        // await this.$axios.$post('/video/', this.video)
+        const newVideo = await this.$axios.$post('/video/', this.video)
         this.uploading = true
-        this.upload(this.currentFile, 'test', (event) => {
+        this.upload(this.currentFile, newVideo._id, (event) => {
           this.progress = Math.round((100 * event.loaded) / event.total)
         })
           .then((response) => {
