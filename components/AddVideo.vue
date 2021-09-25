@@ -164,15 +164,7 @@
           url: 'master.m3u8',
           uploaded_date: '',
           recorded_date: '',
-          files: [
-            {
-              name: '',
-              size: '',
-              resolution: '',
-              type: '',
-              url: '',
-            },
-          ],
+          files: [],
           categories: [],
           unlisted: false,
           private: false,
