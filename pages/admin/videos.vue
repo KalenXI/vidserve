@@ -31,10 +31,34 @@
             <v-simple-checkbox v-model="item.unlisted"></v-simple-checkbox>
           </template>
           <template #[`item.actions`]="{ item }">
-            <v-icon small class="mr-2" @click="editItem(item)">
-              mdi-pencil
-            </v-icon>
-            <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+            <v-btn :to="'/video/' + item._id" icon x-small
+              ><v-icon>mdi-eye</v-icon></v-btn
+            >
+            <v-dialog v-model="deleteDialog" persistent max-width="290">
+              <template #activator="{ on, attrs }">
+                <v-btn icon x-small v-bind="attrs" v-on="on"
+                  ><v-icon>mdi-delete</v-icon></v-btn
+                >
+              </template>
+              <v-card>
+                <v-card-title class="text-h5"> Delete video? </v-card-title>
+                <v-card-text
+                  >Are you sure you want to delete this video?</v-card-text
+                >
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="green darken-1"
+                    text
+                    @click="deleteDialog = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn color="green darken-1" text @click="deleteVideo(item)">
+                    Delete
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </template>
         </v-data-table>
       </v-col>
@@ -57,6 +81,7 @@
     },
     data() {
       return {
+        deleteDialog: false,
         headers: [
           { text: 'Title ', value: 'title' },
           { text: 'Uploaded Date', value: 'uploaded_date' },
@@ -67,6 +92,7 @@
         ],
         videos: [
           {
+            _id: '',
             title: '',
             description: '',
             url: '',
@@ -92,6 +118,13 @@
       this.$nuxt.$on('video-data-updated', async function () {
         await this.$nuxt.refresh()
       })
+    },
+    methods: {
+      async deleteVideo(item) {
+        await this.$axios.$delete('/video/' + item._id)
+        await this.$nuxt.refresh()
+        this.deleteDialog = false
+      },
     },
   }
 </script>

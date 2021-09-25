@@ -82,6 +82,7 @@
         <small>*indicates required field</small>
       </v-card-text>
       <v-card-actions>
+        <v-btn color="red" @click="deleteVideo"> Delete </v-btn>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="cancelSave"> Cancel </v-btn>
         <v-btn color="blue darken-1" @click="saveVideo"> Save </v-btn>
@@ -91,98 +92,105 @@
 </template>
 
 <script>
-const { DateTime } = require('luxon')
+  const { DateTime } = require('luxon')
 
-export default {
-  name: 'EditVideo',
-  props: {
-    initialVideo: {
-      type: Object,
-      default() {
-        return {
-          title: '',
-          description: '',
-          url: '',
-          uploaded_date: '',
-          recorded_date: '',
-          files: [
-            {
-              name: '',
-              size: '',
-              resolution: '',
-              type: '',
-              url: '',
-            },
-          ],
-          categories: [],
-          unlisted: true,
-          password: null,
-        }
+  export default {
+    name: 'EditVideo',
+    props: {
+      initialVideo: {
+        type: Object,
+        default() {
+          return {
+            title: '',
+            description: '',
+            url: '',
+            uploaded_date: '',
+            recorded_date: '',
+            files: [
+              {
+                name: '',
+                size: '',
+                resolution: '',
+                type: '',
+                url: '',
+              },
+            ],
+            categories: [],
+            unlisted: true,
+            password: null,
+          }
+        },
       },
     },
-  },
-  data() {
-    return {
-      dialog: false,
-      dateMenu: false,
-      timeMenu: false,
-      isLoading: false,
-      categories: [],
-      video: { ...this.initialVideo },
-      recDateTime: DateTime.fromISO(this.initialVideo.recorded_date + 'Z'),
-    }
-  },
-  computed: {
-    formattedRecDate() {
-      return this.recDateTime.toLocaleString(DateTime.DATE_SHORT)
+    data() {
+      return {
+        dialog: false,
+        dateMenu: false,
+        timeMenu: false,
+        isLoading: false,
+        categories: [],
+        video: { ...this.initialVideo },
+        recDateTime: DateTime.fromISO(this.initialVideo.recorded_date + 'Z'),
+      }
     },
-    formattedRecTime() {
-      return this.recDateTime.toLocaleString(DateTime.TIME_SIMPLE)
+    computed: {
+      formattedRecDate() {
+        return this.recDateTime.toLocaleString(DateTime.DATE_SHORT)
+      },
+      formattedRecTime() {
+        return this.recDateTime.toLocaleString(DateTime.TIME_SIMPLE)
+      },
+      datePickerText: {
+        get() {
+          return this.recDateTime.toISODate()
+        },
+        set(val) {
+          this.recDateTime = DateTime.fromISO(
+            val + 'T' + this.recDateTime.toISOTime()
+          )
+        },
+      },
+      timePickerText: {
+        get() {
+          return this.recDateTime.toLocaleString(DateTime.TIME_24_SIMPLE)
+        },
+        set(val) {
+          this.recDateTime = DateTime.fromISO(
+            this.recDateTime.toISODate() + 'T' + val
+          )
+        },
+      },
     },
-    datePickerText: {
-      get() {
-        return this.recDateTime.toISODate()
-      },
-      set(val) {
-        this.recDateTime = DateTime.fromISO(
-          val + 'T' + this.recDateTime.toISOTime()
-        )
-      },
-    },
-    timePickerText: {
-      get() {
-        return this.recDateTime.toLocaleString(DateTime.TIME_24_SIMPLE)
-      },
-      set(val) {
-        this.recDateTime = DateTime.fromISO(
-          this.recDateTime.toISODate() + 'T' + val
-        )
-      },
-    },
-  },
-  mounted() {
-    this.recDateTime = DateTime.fromISO(this.video.recorded_date + 'Z')
+    mounted() {
+      this.recDateTime = DateTime.fromISO(this.video.recorded_date + 'Z')
 
-    fetch('http://10.0.0.238:8000/category/')
-      .then((res) => res.clone().json())
-      .then((res) => {
-        this.categories = res
-      })
-  },
-  methods: {
-    async saveVideo() {
-      this.video.recorded_date = this.recDateTime.setZone('UTC').toISO()
-      await this.$axios.$put('/video/' + this.video._id, this.video)
-      this.$nuxt.$emit('video-data-updated')
-      this.dialog = false
+      fetch('http://10.0.0.238:8000/category/')
+        .then((res) => res.clone().json())
+        .then((res) => {
+          this.categories = res
+        })
     },
-    cancelSave() {
-      this.video = { ...this.initialVideo }
-      this.recDateTime = DateTime.fromISO(this.initialVideo.recorded_date + 'Z')
-      this.dialog = false
+    methods: {
+      async saveVideo() {
+        this.video.recorded_date = this.recDateTime.setZone('UTC').toISO()
+        await this.$axios.$put('/video/' + this.video._id, this.video)
+        this.$nuxt.$emit('video-data-updated')
+        this.dialog = false
+      },
+      async deleteVideo() {
+        await this.$axios.$delete('/video/' + this.video._id)
+        this.$nuxt.$emit('video-data-deleted')
+        this.dialog = false
+      },
+      cancelSave() {
+        this.video = { ...this.initialVideo }
+        this.recDateTime = DateTime.fromISO(
+          this.initialVideo.recorded_date + 'Z'
+        )
+        this.dialog = false
+      },
     },
-  },
-}
+  }
 </script>
 
 <style scoped></style>

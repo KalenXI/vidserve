@@ -133,6 +133,9 @@
       this.$nuxt.$on('video-data-updated', async function () {
         await this.$nuxt.refresh()
       })
+      this.$nuxt.$on('video-data-deleted', async function () {
+        await this.$nuxt.$router.go(-1)
+      })
     },
     mounted() {
       const defaultOptions = {}
@@ -191,6 +194,7 @@
     },
     beforeDestroy() {
       this.$nuxt.$off('video-data-updated')
+      this.$nuxt.$off('video-data-deleted')
     },
     methods: {
       download(id, baseURL, url) {

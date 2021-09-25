@@ -161,7 +161,7 @@
         video: {
           title: '',
           description: '',
-          url: '',
+          url: 'master.m3u8',
           uploaded_date: '',
           recorded_date: '',
           files: [

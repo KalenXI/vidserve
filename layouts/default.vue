@@ -34,6 +34,14 @@
               <v-list-item-title>Videos</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/admin/jobs" class="pr-6" router exact>
+            <v-list-item-action>
+              <v-icon>mdi-animation-play</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Jobs</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item to="/admin/libraries" class="pr-6" router disabled exact>
             <v-list-item-action>
               <v-icon>mdi-bookshelf</v-icon>

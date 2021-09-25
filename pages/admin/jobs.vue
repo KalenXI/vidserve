@@ -31,7 +31,7 @@
     },
     data() {
       return {
-        timer: '',
+        refreshtime: null,
         headers: [
           { text: 'ID', value: '_id' },
           { text: 'Video File', value: 'video_file' },
@@ -50,8 +50,18 @@
         ],
       }
     },
-    created() {
-      this.timer = setInterval(this.$nuxt.refresh, 1000)
+    mounted() {
+      this.pollData()
+    },
+    beforeDestroy() {
+      clearInterval(this.refreshtime)
+    },
+    methods: {
+      pollData() {
+        this.refreshtime = setInterval(() => {
+          this.$nuxt.refresh()
+        }, 1000)
+      },
     },
   }
 </script>
