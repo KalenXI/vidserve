@@ -76,7 +76,10 @@
               lazy-src="/placeholder-image.png"
               style="background-image: url('/placeholder-image.png')"
               :src="
-                baseURL + '/files/videos/' + vid._id + '/thumb.jpg'
+                process.env.API_BASEURL +
+                '/files/videos/' +
+                vid._id +
+                '/thumb.jpg'
               "></v-img>
           </v-col>
           <v-col style="flex-grow: 5">
