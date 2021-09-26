@@ -3,13 +3,7 @@
     <video width="100%" height="100%" playsinline controls>
       <source
         type="application/x-mpegURL"
-        :src="
-          process.env.API_BASEURL +
-          '/files/videos/' +
-          video._id +
-          '/' +
-          video.url
-        " />
+        :src="baseURL + '/files/videos/' + video._id + '/' + video.url" />
       Your browser doesn't support HTML5 video.
     </video>
     <v-row class="my-5 mx-xl-12">
@@ -57,9 +51,7 @@
                   v-for="(file, index) in video.files"
                   :key="index"
                   two-line
-                  @click="
-                    download(video._id, process.env.API_BASEURL, file.url)
-                  ">
+                  @click="download(video._id, baseURL, file.url)">
                   <v-list-item-content>
                     <v-list-item-title>{{ file.name }}</v-list-item-title>
                     <v-list-item-subtitle>
@@ -135,6 +127,11 @@
           password: null,
         },
       }
+    },
+    computed: {
+      baseURL() {
+        return process.env.API_BASEURL
+      },
     },
     created() {
       this.$nuxt.$on('video-data-updated', async function () {

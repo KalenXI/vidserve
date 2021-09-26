@@ -19,12 +19,7 @@
             contain
             lazy-src="/placeholder-image.png"
             style="background-image: url('/placeholder-image.png')"
-            :src="
-              process.env.API_BASEURL +
-              '/files/videos/' +
-              vid._id +
-              '/thumb.jpg'
-            "></v-img>
+            :src="baseURL + '/files/videos/' + vid._id + '/thumb.jpg'"></v-img>
         </v-col>
         <v-col style="flex-grow: 5">
           <v-card-title>{{ vid.title }}</v-card-title>
@@ -84,6 +79,9 @@
     computed: {
       totalPages() {
         return Math.ceil(Math.ceil(this.res.total / this.limit))
+      },
+      baseURL() {
+        return process.env.API_BASEURL
       },
     },
     methods: {

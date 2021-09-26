@@ -76,10 +76,7 @@
               lazy-src="/placeholder-image.png"
               style="background-image: url('/placeholder-image.png')"
               :src="
-                process.env.API_BASEURL +
-                '/files/videos/' +
-                vid._id +
-                '/thumb.jpg'
+                baseURL + '/files/videos/' + vid._id + '/thumb.jpg'
               "></v-img>
           </v-col>
           <v-col style="flex-grow: 5">
@@ -200,6 +197,9 @@
           items.push(item)
         }
         return items
+      },
+      baseURL() {
+        return process.env.API_BASEURL
       },
     },
     mounted() {
