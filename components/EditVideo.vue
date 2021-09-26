@@ -164,7 +164,7 @@
     mounted() {
       this.recDateTime = DateTime.fromISO(this.video.recorded_date + 'Z')
 
-      fetch(process.env.API_BASEURL + '/category/')
+      fetch(this.$config.baseURL + '/category/')
         .then((res) => res.clone().json())
         .then((res) => {
           this.categories = res

@@ -204,13 +204,13 @@
     mounted() {
       this.recDateTime = DateTime.now()
 
-      fetch(process.env.API_BASEURL + '/category/')
+      fetch(this.$config.baseURL + '/category/')
         .then((res) => res.clone().json())
         .then((res) => {
           this.categories = res
         })
 
-      fetch(process.env.API_BASEURL + '/library/')
+      fetch(this.$config.baseURL + '/library/')
         .then((res) => res.clone().json())
         .then((res) => {
           this.libraries = res

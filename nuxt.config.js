@@ -30,6 +30,10 @@ export default {
     { src: '~/plugins/filters.js' },
   ],
 
+  publicRuntimeConfig: {
+    baseURL: process.env.API_BASEURL,
+  },
+
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
