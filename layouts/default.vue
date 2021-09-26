@@ -156,6 +156,7 @@
   export default {
     data() {
       return {
+        baseURL: process.env.API_BASEURL,
         categories: [],
         libraries: [],
         permissions: [],
@@ -181,14 +182,12 @@
           Authorization: this.$auth.strategy.token.get(),
         },
       }
-      this.categories = await fetch(
-        process.env.API_BASEURL + '/category/',
-        header
-      ).then((res) => res.json())
-      this.libraries = await fetch(
-        process.env.API_BASEURL + '/library/root',
-        header
-      ).then((res) => res.json())
+      this.categories = await fetch(this.baseURL + '/category/', header).then(
+        (res) => res.json()
+      )
+      this.libraries = await fetch(this.baseURL + '/library/root', header).then(
+        (res) => res.json()
+      )
       if (this.$auth.loggedIn) {
         this.permissions = await this.$axios.$get('/user/roles')
       }
