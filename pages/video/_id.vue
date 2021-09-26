@@ -105,7 +105,6 @@
       return {
         dialog: false,
         select: [],
-        baseURL: 'http://localhost:8000',
         selectedItem: {},
         permissions: [],
         video: {

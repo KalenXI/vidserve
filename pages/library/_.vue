@@ -174,7 +174,6 @@
         page: 1,
         total: 0,
         limit: 10,
-        baseURL: 'http://10.0.0.238:8000',
         unauthorized: false,
         libraryLoaded: false,
         password: '',

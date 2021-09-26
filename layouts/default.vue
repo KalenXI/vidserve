@@ -182,11 +182,11 @@
         },
       }
       this.categories = await fetch(
-        'http://localhost:8000/category/',
+        process.env.API_BASEURL + '/category/',
         header
       ).then((res) => res.json())
       this.libraries = await fetch(
-        'http://localhost:8000/library/root',
+        process.env.API_BASEURL + '/library/root',
         header
       ).then((res) => res.json())
       if (this.$auth.loggedIn) {

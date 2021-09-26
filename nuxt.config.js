@@ -50,7 +50,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://localhost:8000',
+    baseURL: process.env.API_BASEURL,
   },
   auth: {
     redirect: {
@@ -62,8 +62,8 @@ export default {
       auth0: {
         domain: process.env.AUTH0_DOMAIN,
         clientId: process.env.AUTH0_CLIENT_ID,
-        logoutRedirectUri: 'http://localhost:3000',
-        audience: 'http://10.0.0.238:8000'
+        logoutRedirectUri: process.env.AUTH0_LOGOUT_REDIRECT,
+        audience: process.env.AUTH0_AUDIENCE,
       },
     },
   },

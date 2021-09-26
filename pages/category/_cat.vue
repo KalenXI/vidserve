@@ -47,50 +47,49 @@
 </template>
 
 <script>
-export default {
-  name: 'CategoryView',
-  async asyncData({ params, $axios }) {
-    const cat = params.cat
-    const res = await $axios.$get('/category/' + cat)
-    return { cat, res }
-  },
-  data() {
-    return {
-      cat: '',
-      baseURL: 'http://10.0.0.238:8000',
-      page: 1,
-      total: 0,
-      limit: 10,
-      res: [],
-      videos: [],
-      video: {
-        title: '',
-        description: '',
-        url: '',
-        img: '',
-        uploaded_date: '',
-        recorded_date: '',
-        files: {},
-        categories: [],
-        unlisted: true,
-        password: null,
+  export default {
+    name: 'CategoryView',
+    async asyncData({ params, $axios }) {
+      const cat = params.cat
+      const res = await $axios.$get('/category/' + cat)
+      return { cat, res }
+    },
+    data() {
+      return {
+        cat: '',
+        page: 1,
+        total: 0,
+        limit: 10,
+        res: [],
+        videos: [],
+        video: {
+          title: '',
+          description: '',
+          url: '',
+          img: '',
+          uploaded_date: '',
+          recorded_date: '',
+          files: {},
+          categories: [],
+          unlisted: true,
+          password: null,
+        },
+      }
+    },
+    computed: {
+      totalPages() {
+        return Math.ceil(Math.ceil(this.res.total / this.limit))
       },
-    }
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(Math.ceil(this.res.total / this.limit))
     },
-  },
-  methods: {
-    async handlePageChange() {
-      const skip = (this.page - 1) * this.limit
-      this.res = await this.$axios.$get(
-        '/category/' + this.cat + '?skip=' + skip + '&limit=' + this.limit
-      )
+    methods: {
+      async handlePageChange() {
+        const skip = (this.page - 1) * this.limit
+        this.res = await this.$axios.$get(
+          '/category/' + this.cat + '?skip=' + skip + '&limit=' + this.limit
+        )
+      },
     },
-  },
-}
+  }
 </script>
 
 <style scoped></style>
