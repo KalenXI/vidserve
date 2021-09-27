@@ -1,7 +1,8 @@
 <template>
   <v-container>
-    <h1>{{ cat | titleCase | formatCategories }}</h1>
+    <h1 class="my-4">{{ cat | titleCase | formatCategories }}</h1>
     <v-pagination
+      v-if="totalPages > 1"
       v-model="page"
       :length="totalPages"
       @input="handlePageChange"></v-pagination>
@@ -42,6 +43,7 @@
       </v-row>
     </v-card>
     <v-pagination
+      v-if="totalPages > 1"
       v-model="page"
       :length="totalPages"
       @input="handlePageChange"></v-pagination>

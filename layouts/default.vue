@@ -4,6 +4,7 @@
       v-model="drawer"
       :mini-variant="miniVariant"
       :clipped="clipped"
+      :permanent="$vuetify.breakpoint.mdAndUp"
       fixed
       app>
       <v-list>
@@ -142,9 +143,7 @@
       </div>
     </v-app-bar>
     <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
+      <Nuxt />
     </v-main>
     <v-footer :absolute="!fixed" app>
       <span>&copy; {{ new Date().getFullYear() }} Kevin Vinck</span>
@@ -160,7 +159,7 @@
         libraries: [],
         permissions: [],
         clipped: true,
-        drawer: true,
+        drawer: false,
         fixed: true,
         items: [
           {
@@ -170,7 +169,7 @@
           },
         ],
         miniVariant: false,
-        right: true,
+        right: false,
         rightDrawer: false,
         title: 'Last Edit Media',
       }

@@ -1,5 +1,5 @@
 <template>
-  <v-container style="max-width: 90em">
+  <v-container class="px-0 px-sm-6" style="max-width: 90em">
     <video width="100%" height="100%" playsinline controls>
       <source
         type="application/x-mpegURL"
@@ -10,7 +10,7 @@
     </video>
     <v-row class="my-5 mx-xl-12">
       <v-col style="flex-grow: 5">
-        <v-card class="pa-4">
+        <v-card min-width="325px" class="pa-4">
           <h1>{{ video.title }}</h1>
           <div>Recorded On: {{ video.recorded_date | formatDate }}</div>
           <div>Uploaded On: {{ video.uploaded_date | formatDate }}</div>
@@ -33,7 +33,7 @@
           {{ video.description }}
         </div>
       </v-col>
-      <v-col class="d-flex justify-end" style="min-width: 100px">
+      <v-col class="d-flex justify-end" style="min-width: 200px">
         <div class="d-flex flex-column flex-wrap" style="width: 100%">
           <v-menu
             v-if="video.files.length > 0"
