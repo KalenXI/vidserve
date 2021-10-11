@@ -20,6 +20,19 @@
           <v-row class="mx-0">
             <b>Record Date</b>: {{ vid.recorded_date | formatDate }}
           </v-row>
+          <v-row class="mx-0">
+            <b>Categories</b>:
+            <v-chip
+              v-for="category in vid.categories"
+              :key="category"
+              small
+              link
+              nuxt
+              :to="'/category/' + category"
+              class="mx-1"
+              >{{ category }}
+            </v-chip>
+          </v-row>
           <v-row class="mx-0 py-2" style="text-align: justify">
             {{ vid.description }}
           </v-row>

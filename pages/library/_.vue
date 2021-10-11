@@ -61,55 +61,7 @@
         v-model="page"
         :length="totalPages"
         @input="handlePageChange"></v-pagination>
-      <v-card
-        v-for="vid in res.videos"
-        :key="vid._id"
-        :to="'/video/' + vid._id"
-        class="mx-auto my-5">
-        <v-row no-gutters>
-          <v-col class="d-flex justify-start">
-            <v-img
-              class="ma-3"
-              height="200"
-              width="355"
-              contain
-              lazy-src="/placeholder-image.png"
-              style="background-image: url('/placeholder-image.png')"
-              :src="
-                $config.baseURL + '/files/videos/' + vid._id + '/thumb.jpg'
-              "></v-img>
-          </v-col>
-          <v-col style="flex-grow: 5">
-            <v-card-title>{{ vid.title }}</v-card-title>
-            <v-card-text>
-              <v-row dense class="mx-0 mb-1">
-                Duration: {{ vid.duration | formatTime }}
-              </v-row>
-              <v-row dense class="mx-0 mb-1">
-                Record Date: {{ vid.recorded_date | formatDate }}
-              </v-row>
-              <v-row dense class="mx-0 mb-1">
-                Categories:
-                <v-chip
-                  v-for="category in vid.categories"
-                  :key="category"
-                  small
-                  link
-                  nuxt
-                  :to="'/category/' + category"
-                  class="mx-1"
-                  >{{ category }}
-                </v-chip>
-              </v-row>
-              <v-row
-                class="ml-0 mr-5 mt-n4"
-                style="white-space: pre-line; text-align: justify">
-                {{ vid.description }}
-              </v-row>
-            </v-card-text>
-          </v-col>
-        </v-row>
-      </v-card>
+      <VideoBox v-for="vid in res.videos" :key="vid._id" :vid="vid"> </VideoBox>
       <v-pagination
         v-if="totalPages > 1"
         v-model="page"
@@ -120,8 +72,13 @@
 </template>
 
 <script>
+  import VideoBox from '@/components/VideoBox'
+
   export default {
     name: 'Libraries',
+    components: {
+      VideoBox,
+    },
     async asyncData({ $axios, params }) {
       let unauthorized = false
       let libraryLoaded = false
