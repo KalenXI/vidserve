@@ -57,7 +57,8 @@
                   <v-list-item-content>
                     <v-list-item-title>{{ file.name }}</v-list-item-title>
                     <v-list-item-subtitle>
-                      <b>{{ file.size }}</b> | {{ file.resolution }} |
+                      <b>{{ file.size | prettyBytes }}</b> |
+                      {{ file.resolution }} |
                       {{ file.type }}
                     </v-list-item-subtitle>
                   </v-list-item-content>

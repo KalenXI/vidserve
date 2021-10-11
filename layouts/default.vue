@@ -109,13 +109,11 @@
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <img
-        style="width: 180px"
+        style="width: 130px"
         class="mr-4"
         alt="Last Edit Logo"
         src="/last-edit-logo-white.svg" />
-      <v-toolbar-title class="text-xl-h4 font-weight-bold">
-        Videos
-      </v-toolbar-title>
+      <v-toolbar-title class="font-weight-bold"> Videos </v-toolbar-title>
       <v-spacer />
       <v-btn v-if="!$auth.loggedIn" color="primary" @click="login()"
         >Login</v-btn
